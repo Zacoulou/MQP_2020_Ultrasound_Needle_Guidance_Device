@@ -1,15 +1,5 @@
 #include "main.h"
 
-
-//Task to run in core 0
-// void codeForTask1(void * parameter){
-//   //tft.begin();
-//   for(;;){    
-//     audioManager();
-//     vTaskDelay(10);
-//   }
-// }
-
 //--------------------------- SETUP --------------------------------------
 void setup()
 { 
@@ -32,31 +22,21 @@ void setup()
   preferences.begin("UserData", false);
 
   //Attempt to initialize SD card
-  Serial.println("Initializing SD card...");
-  if (!SD.begin(SD_CS)){
-    Serial.println("ERROR - SD card initialization failed!");
-    currentAudio = &emptyOption;
-    // AllMessagesPage.options = {&BackButton};
-    // FavoritesPage.options = {&BackButton};
-  }else{
-    Serial.println("Success!");
-    //If ESP32 First Boot, retrieve directory and establish AudioFilesInfo.txt file
-    if (preferences.getInt("firstBoot") == 0){
-      tft.fillScreen(ILI9341_DARKGREY);
-      Serial.println("First Boot, adding mp3 files to txt file and reseting preferences");
-      writeOptionsVectorToTextFile("/AudioFilesInfo.txt", retrieveDirectory());
-      preferences.putInt("firstBoot", 1);
-    }
+  // Serial.println("Initializing SD card...");
+  // if (!SD.begin(SD_CS)){
+  //   Serial.println("ERROR - SD card initialization failed!");
+  //   currentAudio = &emptyOption;
 
-    //adds all messages to the ALL Messages page, and favorite messages to favorites page
-    // AllMessagesPage.options = readAudioVectorFromTextFile("/AudioFilesInfo.txt");
-    // AllMessagesPage.numOptions = AllMessagesPage.options.size();
-    // FavoritesPage.options = extractFavoritesFromPage(&AllMessagesPage);
-    // FavoritesPage.numOptions = FavoritesPage.options.size();
-    
-    // currentAudio = AllMessagesPage.options[1]; //initializes current audio to first audio on list
-    // MainPage.title = currentAudio->title;
-  }
+  // }else{
+  //   Serial.println("Success!");
+  //   //If ESP32 First Boot, retrieve directory and establish AudioFilesInfo.txt file
+  //   if (preferences.getInt("firstBoot") == 0){
+  //     tft.fillScreen(ILI9341_DARKGREY);
+  //     Serial.println("First Boot, adding mp3 files to txt file and reseting preferences");
+  //     writeOptionsVectorToTextFile("/AudioFilesInfo.txt", retrieveDirectory());
+  //     preferences.putInt("firstBoot", 1);
+  //   }
+  // }
   tft.begin();
   drawHeader();
   displayText("WiFi Off", 2, 5, 5, ILI9341_WHITE, ILI9341_BLACK);
@@ -70,26 +50,24 @@ void setup()
   pinMode(switch_D, INPUT);
   pinMode(switch_E, INPUT);
 
-  //Serial.println(xPortGetCoreID());
+  
+  //Initializing Encoder
+  pinMode(ENCODER_CS, OUTPUT);
+  pinMode(ENCODER_CLOCK, OUTPUT);
+  pinMode(ENCODER_DATA, INPUT);
 
-//   xTaskCreatePinnedToCore(
-//       codeForTask1,       //Task Funciton
-//       "Task_1",           //Name of Task
-//       2500,               //Stack size of task
-//       NULL,               //parameter of task
-//       1,                  //priority of task
-//       &Task1,             //Task handle to keep track of created task
-//       0);                 //Core
+  digitalWrite(ENCODER_CLOCK, HIGH);
+  digitalWrite(ENCODER_CS, LOW);
 
 }
 
 //--------------------------- LOOP --------------------------------------
 //running on core 1
 void loop(void){
+
   prevOption = optionSelected;
   prevTab = tabSelected;  
   handleButtonLag();
-  // audioManager();
   screenUpdate();
   headerInfo();
 

@@ -6,6 +6,7 @@
 #include <arduino.h>
 #include <vector>
 #include <stdint.h>
+#include <Encoder.h>
 using namespace std;
 
 extern boolean updateAudioFilesList;
@@ -76,6 +77,7 @@ class Option{
     void volumeControl(double V);
     void favoriteItem();
     void resetDevice();
+    void displayEncoderData();
 
     //Destructor
     //~Option();
